@@ -90,3 +90,37 @@ jobs:
         flags: integration,purepy
         name: test-linux-${{ matrix.python }}-${{ matrix.kafka }}-${{ matrix.scala }}-py
       if: ${{ always() }}
+      
+  test-aarch64:
+    name: build_arm64
+    runs-on: ubuntu-latest
+    strategy:
+        fail-fast: false 
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up QEMU
+      id: qemu
+      uses: docker/setup-qemu-action@v1
+    - name: Build and Test for arm64
+      run: |
+           docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
+           arm64v8/ubuntu:latest \
+           bash -exc 'apt-get update && apt-get -y install git && \
+           ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && export DEBIAN_FRONTEND=noninteractive && apt-get install -y tzdata && dpkg-reconfigure --frontend noninteractive tzdata && \
+           apt install -y software-properties-common && \
+           add-apt-repository ppa:deadsnakes/ppa && \
+           apt install -y python3.8 && \
+           apt install -y python3.8-venv && \
+           python3.8 -m venv venv38 && \
+           source venv38/bin/activate && \
+           python -m pip install --upgrade pip setuptools wheel && \
+           apt-get update && \
+           apt-get install -y python3-dev build-essential && \
+           apt-get install -y libsnappy-dev libzstd-dev libkrb5-dev krb5-user && \
+           python -m pip install -r requirements-dev.txt && \
+           python -m pip install -r requirements-ci.txt && \
+           python -m pip install -vv -Ue . && \
+           make ci-test-all && \
+           mv coverage.xml coverage-ext.xml`
+           #python -m pip install flake8 pytest pytest-django django==3.2.11 && \
+           #coverage run --parallel --source watchman runtests.py'          
