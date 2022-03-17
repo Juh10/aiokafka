@@ -121,6 +121,4 @@ jobs:
            python -m pip install -r requirements-ci.txt && \
            python -m pip install -vv -Ue . && \
            make ci-test-all && \
-           mv coverage.xml coverage-ext.xml`
-           #python -m pip install flake8 pytest pytest-django django==3.2.11 && \
-           #coverage run --parallel --source watchman runtests.py'          
+           mv coverage.xml coverage-ext.xml'          
