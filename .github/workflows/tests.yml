@@ -13,9 +13,12 @@ on:
     branches: [ master ]
 
 jobs:
-  test-linux:
+  test-sanity:
+
     needs: test-sanity
     runs-on: ubuntu-latest
+
+
 
     strategy:
       matrix:
